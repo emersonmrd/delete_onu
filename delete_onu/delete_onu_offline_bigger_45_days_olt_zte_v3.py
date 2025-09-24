@@ -13,7 +13,7 @@ from threading import Lock
 # Configurações
 path_01_base = "onus_state"  # Será usado como prefixo para cada thread
 path_02 = "log_zte.txt"
-qtd_dias = 31
+qtd_dias = 45
 
 # Variáveis que controlam os contadores globais
 total_onus_deletadas = 0

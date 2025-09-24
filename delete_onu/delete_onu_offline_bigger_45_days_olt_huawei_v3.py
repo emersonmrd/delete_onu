@@ -209,24 +209,48 @@ def get_onus_offlines(shell, host, thread_id):
 
     for line in data:
         if '    down' in line:
+            
             result = line.split()
+            
+            #print(f"[DEBUG] Thread-{thread_id}: Linha service-port down encontrada: {result}")
+            
             service_port_id = result[0]
             
-            chassi_slot = result[4].split('/')
-            chassi_id = chassi_slot[0]
-            slot_id = chassi_slot[1]
-            pon_id = result[5].replace('/', '')
-            onu_id = result[6]
+             # Verifica se o próximo campo após 'gpon' contém '/' (formato completo)
+            gpon_index = result.index('gpon')
+            gpon_interface = result[gpon_index + 1]
+            
+            if gpon_interface.count('/') == 2:  # Formato: 0/15/6
+                # Interface completa em um campo
+                chassi_slot_pon = gpon_interface.split('/')
+                chassi_id = chassi_slot_pon[0]
+                slot_id = chassi_slot_pon[1] 
+                pon_id = chassi_slot_pon[2]
+                onu_id = result[gpon_index + 2]
+                
+            else:  # Formato: 0/1 /4 (chassi/slot separado do pon)
+                # Interface dividida em dois campos
+                chassi_slot = gpon_interface.split('/')
+                chassi_id = chassi_slot[0]
+                slot_id = chassi_slot[1]
+                pon_id = result[gpon_index + 2].replace('/', '')  # Remove a '/' do pon
+                onu_id = result[gpon_index + 3]
+            
+            print(f"[INFO] Thread-{thread_id}: Verificando SERVICE-PORT:{service_port_id} ONU {chassi_id}/{slot_id}/{pon_id}:{onu_id}...")
 
             shell.send(f"display ont info {chassi_id} {slot_id} {pon_id} {onu_id}\n\n")
             time.sleep(3)
             output = read_output(shell).splitlines()
+            
+            #print(f"[DEBUG] Thread-{thread_id}: Saída do comando display ont info:\n" + "\n".join(output))
 
             result_sn = None
             for l in output:
                 if 'SN' in l and 'SN-auth' not in l:
+                    #print(f"[DEBUG] Thread-{thread_id}: Linha SN encontrada: {l.strip()}")
                     result_sn = l.split()[2]
                 elif 'Last down time' in l:
+                    #print(f"[DEBUG] Thread-{thread_id}: Last down time linha: {l.strip()}")
                     if l.split()[4] == '-':
                         contador_sem_last_down += 1
                         list_onus_deletadas.append((result_sn, service_port_id, chassi_id, slot_id, pon_id, onu_id))
@@ -421,7 +445,9 @@ if __name__ == "__main__":
     # Lê lista de equipamentos do CSV se necessário
     try:
         # Lista de OLTs
-        equipamentos = ['']  # Adicione mais IPs aqui
+        #equipamentos = ['10.144.0.10']  # LAB
+        
+        equipamentos = ['10.146.61.3'] # Adicione mais IPs aqui 
         #df_hosts = pd.read_csv("olts_huawei.csv")
         # Descomente a linha abaixo se quiser usar o CSV
         #equipamentos = df_hosts["host"].tolist()

@@ -495,7 +495,7 @@ def delete_onus_from_whitelist(shell, onus_para_deletar, host, thread_id):
                 dias_offline = onu['dias_offline']
                 
                 command = f'set whitelist phy_addr address {phy_id} password null action delete\n'
-                #shell.send(command)
+                shell.send(command)
                 time.sleep(1)
                 
                 now = datetime.now()
