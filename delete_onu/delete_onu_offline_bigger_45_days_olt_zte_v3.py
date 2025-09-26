@@ -23,9 +23,6 @@ total_onus_nunca_online = 0
 MAX_THREADS = 90  # Número máximo de threads simultâneas
 THREAD_DELAY = 5  # Delay entre inicialização de threads (segundos)
 
-# Lista de OLTs
-#equipamentos = ['']  # lab
-#equipamentos = ['']  # Adicione todas as OLTs que precisa processar
 
 # Lock para escrita no arquivo de log (thread-safe)
 log_lock = Lock()
@@ -407,9 +404,14 @@ if __name__ == "__main__":
     
     # Lê lista de equipamentos do CSV se necessário
     try:
-        df_hosts = pd.read_csv("olts_zte.csv")
+        
+        # Lista de OLTs
+        #equipamentos = ['']  # lab
+        equipamentos = ['10.144.89.15']  # Adicione todas as OLTs que precisa processar
+
+        #df_hosts = pd.read_csv("olts_zte.csv")
         # Descomente a linha abaixo se quiser usar o CSV
-        equipamentos = df_hosts["host"].tolist()
+        #equipamentos = df_hosts["host"].tolist()
     except:
         write_log("[WARN] Não foi possível carregar CSV, usando lista hardcoded")
     
