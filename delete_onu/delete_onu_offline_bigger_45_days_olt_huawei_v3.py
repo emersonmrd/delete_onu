@@ -239,7 +239,7 @@ def get_onus_offlines(shell, host, thread_id):
             print(f"[INFO] Thread-{thread_id}: Verificando SERVICE-PORT:{service_port_id} ONU {chassi_id}/{slot_id}/{pon_id}:{onu_id}...")
 
             shell.send(f"display ont info {chassi_id} {slot_id} {pon_id} {onu_id}\n\n")
-            time.sleep(3)
+            time.sleep(5)
             output = read_output(shell).splitlines()
             
             #print(f"[DEBUG] Thread-{thread_id}: Saída do comando display ont info:\n" + "\n".join(output))
@@ -384,7 +384,7 @@ def delete_onu(shell, host, thread_id):
     now = datetime.now()
     date_time = now.strftime("%Y/%m/%d, %H:%M:%S")
     
-    print(f"[INFO] Thread-{thread_id}: Deletando {total_deletadas} ONUs offline a {qtd_dias} dia(s) da OLT {host}...\n")
+    write_log(f"[INFO] Thread-{thread_id}: Deletando {total_deletadas} ONUs offline a {qtd_dias} dia(s) da OLT {host}...\n")
 
     for onu in list_remove_onus:
         result_sn, service_port_id, chassi_id, slot_id, pon_id, onu_id = onu
