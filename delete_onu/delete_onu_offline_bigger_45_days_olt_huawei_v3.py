@@ -23,7 +23,7 @@ total_onus_sem_last_down = 0
 
 # Configurações de threading
 MAX_THREADS = 50  # Número máximo de threads simultâneas
-THREAD_DELAY = 4  # Delay entre inicialização de threads (segundos)
+THREAD_DELAY = 10  # Delay entre inicialização de threads (segundos)
 
 
 # Lock para escrita no arquivo de log (thread-safe)
@@ -252,6 +252,7 @@ def get_onus_offlines(shell, host, thread_id):
                 elif 'Last down time' in l:
                     #print(f"[DEBUG] Thread-{thread_id}: Last down time linha: {l.strip()}")
                     if l.split()[4] == '-':
+                        break # comente caso queira deletar as sem last down time
                         contador_sem_last_down += 1
                         list_onus_deletadas.append((result_sn, service_port_id, chassi_id, slot_id, pon_id, onu_id))
                         print(f"[INFO] Thread-{thread_id}: SERVICE-PORT:{service_port_id} ONU {chassi_id}/{slot_id}/{pon_id}:{onu_id} SEM LAST DOWN TIME (-)")
@@ -447,10 +448,10 @@ if __name__ == "__main__":
         # Lista de OLTs
         #equipamentos = ['10.144.0.10']  # LAB
         
-        equipamentos = ['10.146.61.3'] # Adicione mais IPs aqui 
-        #df_hosts = pd.read_csv("olts_huawei.csv")
+        #equipamentos = ['10.146.204.3'] # Adicione mais IPs aqui 
+        df_hosts = pd.read_csv("olts_huawei.csv")
         # Descomente a linha abaixo se quiser usar o CSV
-        #equipamentos = df_hosts["host"].tolist()
+        equipamentos = df_hosts["host"].tolist()
     except:
         write_log("[WARN] Não foi possível carregar CSV, usando lista hardcoded")
     

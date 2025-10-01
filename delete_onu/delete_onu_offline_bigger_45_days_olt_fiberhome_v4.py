@@ -23,10 +23,10 @@ total_onus_sem_last_off_time = 0
 
 # Configurações de threading
 MAX_THREADS = 50  # Número máximo de threads simultâneas
-THREAD_DELAY = 4  # Delay entre inicialização de threads (segundos)
+THREAD_DELAY = 10  # Delay entre inicialização de threads (segundos)
 
 # Lista de OLTs para validação ou uso unico
-equipamentos = ['']  # Adicione mais IPs aqui
+#equipamentos = ['10.144.123.12']  # Adicione mais IPs aqui
 
 # Lock para escrita no arquivo de log (thread-safe)
 log_lock = Lock()
@@ -347,8 +347,10 @@ def check_onu_offline_time(shell, onu_info, data_atual_olt,thread_id, contador_s
                     last_off_time = off_match.group(1)
                     
                     if last_off_time == '0000-00-00':
+                        continue # Ignora ONUs com last_off_time 0000-00-00, comente esta linha se quiser considerar
                         contador_sem_last_off[0] += 1
                         print(f"[INFO] Thread-{thread_id}: ONU {slot}/{pon}:{onu} SEM LAST OFF TIME (0000-00-00)")
+                        
                         
                         if on_match and on_match.group(1) == '0000-00-00':
                             onu_info['dias_offline'] = 1000
@@ -576,7 +578,7 @@ if __name__ == "__main__":
     try:
         df_hosts = pd.read_csv("olts_fiberhome.csv")
         # Descomente a linha abaixo se quiser usar o CSV
-        #equipamentos = df_hosts["host"].tolist()
+        equipamentos = df_hosts["host"].tolist()
     except:
         write_log("[WARN] Não foi possível carregar CSV, usando lista hardcoded")
     

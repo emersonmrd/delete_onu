@@ -21,7 +21,7 @@ total_onus_nunca_online = 0
 
 # Configurações de threading
 MAX_THREADS = 90  # Número máximo de threads simultâneas
-THREAD_DELAY = 5  # Delay entre inicialização de threads (segundos)
+THREAD_DELAY = 10  # Delay entre inicialização de threads (segundos)
 
 
 # Lock para escrita no arquivo de log (thread-safe)
@@ -177,6 +177,7 @@ def get_onus_offlines(shell, host, thread_id):
         # --- Detectar ONUs que nunca subiram ou extrair histórico ---
         # Checa flag textual "onu never online"
         if re.search(r'\bonu never online\b', result, re.IGNORECASE):
+            continue # comente este continue caso queira deletar automaticamente
             contador_nunca_online += 1
             print(f"[INFO] Thread-{thread_id}: ONU {index[9:]} nunca online (flag no detail-info). Incluindo na lista de deleção.\n")
             list_onus_delete.append((index, serial_number))
@@ -198,6 +199,7 @@ def get_onus_offlines(shell, host, thread_id):
 
         # Se TODAS as AuthPass dates forem 0000-00-00 => nunca subiu
         if all(entry[0] == "0000-00-00" for entry in entries):
+            continue # comente este continue caso queira deletar automaticamente
             contador_nunca_online += 1
             print(f"[INFO] Thread-{thread_id}: ONU {index[9:]} possui apenas AuthPass 0000-00-00. Incluindo na lista de deleção.\n")
             list_onus_delete.append((index, serial_number))
@@ -407,11 +409,11 @@ if __name__ == "__main__":
         
         # Lista de OLTs
         #equipamentos = ['']  # lab
-        equipamentos = ['10.144.89.15']  # Adicione todas as OLTs que precisa processar
+        #equipamentos = ['10.145.233.30']  # Adicione todas as OLTs que precisa processar
 
-        #df_hosts = pd.read_csv("olts_zte.csv")
+        df_hosts = pd.read_csv("olts_zte.csv")
         # Descomente a linha abaixo se quiser usar o CSV
-        #equipamentos = df_hosts["host"].tolist()
+        equipamentos = df_hosts["host"].tolist()
     except:
         write_log("[WARN] Não foi possível carregar CSV, usando lista hardcoded")
     
